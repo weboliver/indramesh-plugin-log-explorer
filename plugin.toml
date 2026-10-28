@@ -1,0 +1,41 @@
+name = "log-explorer"
+version = "1.0.0"
+author = "IndraMesh"
+license = "Apache-2.0"
+api_version = "1.0.0"
+# Phase 305 (LOGX-01): the plugin serves its own Loki query API through the
+# Core route-injection contract. No task_type/connector/database capability.
+capabilities = ["api_routes"]
+module = "module"
+# CLEAN-03: active on first discovery — the plugin replaces the Core System Log
+# viewer and carries no production warning banner.
+active_by_default = true
+# Phase 318: the plugin is only useful with a log store. Both shipped shapes are
+# lean by default (Compose: the `logging` profile; k8s: LOGINFRA_ENABLED), so the
+# installer prints the operator's remedy instead of leaving an installed plugin
+# silently unusable. Metadata only — the Core never branches on it.
+requires_log_store = true
+
+[frontend]
+# The registration bundle (pages + navItems + taskDetailActions); the bundle
+# file is produced by the plugin's own Vite build.
+bundle = "static/log-explorer.js"
+extension_points = ["pages", "navItems", "taskDetailActions"]
+
+# No [config_schema] on purpose (Phase 305): every operator setting the query
+# routes need is deployment environment read at call time — LOKI_QUERY_URL,
+# LOG_EXPLORER_EXTERNAL_ONLY, GRAFANA_EXPLORE_URL, GRAFANA_LOKI_DATASOURCE.
+# Loki tenant/auth headers are out of scope (the bundled Loki is single-tenant
+# without auth), and a mount-time ctx.config snapshot would be stale for a
+# running backend (the Core never refreshes it after a config PUT).
+
+# Phase 305 (LOGX-05/Carry-02): `system-logs:read` keeps its name and its
+# existing role assignments; ownership transfers from Core to this plugin via
+# the explicit Alembic data migration, never by re-declaring a Core name.
+# Defaults mirror the pre-cutover baseline for a FRESH install (insert-only:
+# an upgraded install creates no new grant).
+[[permissions]]
+resource = "system-logs"
+action = "read"
+default_roles = ["Administrator", "Viewer"]
+description = "Search and follow server logs through the log-explorer plugin."

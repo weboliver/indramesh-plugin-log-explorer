@@ -1,0 +1,19 @@
+{
+  "name": "@indramesh/plugin-log-explorer-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "type": "module",
+  "description": "Plugin-local frontend build for the log-explorer plugin: a single lightweight registration bundle (page + Administration nav item + task-detail action) with no runtime dependency.",
+  "scripts": {
+    "build": "vite build --config vite.config.mjs",
+    "verify": "node verify-bundle.mjs"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.0.5",
+    "postcss": "8.5.29",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "vite": "8.3.5"
+  }
+}
