@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.1] - 2026-11-09
+
+### Changed
+
+- **Documentation** — the README explains how to enable the log store the plugin queries: a default IndraMesh Core installation runs without one, so the plugin reports "not configured" until `COMPOSE_PROFILES=logging` (Compose) or `LOGINFRA_ENABLED=true` (k3s) is set in the root `.env`, or `LOKI_QUERY_URL` points at your own Loki.
 
 ## [1.0.0] - 2026-11-01
 
