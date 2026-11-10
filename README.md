@@ -43,6 +43,47 @@ a way around that refusal. An installed plugin is replaced by removing its direc
 first — `plugins/log-explorer` in a Compose checkout, the plugin's directory on the plugins PVC on
 Kubernetes — and installing again. See **Installing and Updating Plugins** in the Core README for the removal commands, including the writable helper pod for the k3s case.
 
+## Enable the log store
+
+The plugin is active right after the install, but it reports **not configured** until Core has a
+Loki to query: a default Core installation runs **without** a log stack. Switch it on in the root
+`.env` of the Core installation — the same file the Core installer created.
+
+**Compose stack** — activate the `logging` profile:
+
+```bash
+# root .env of the Core checkout
+COMPOSE_PROFILES=logging
+```
+
+Then run `docker compose up -d` from the Core checkout root. It starts Loki, Alloy and the read-only
+docker-socket-proxy; `LOKI_QUERY_URL` already defaults to the bundled `http://loki:3100`.
+
+**Local k3s stack** — switch the log stack on and run the installer again:
+
+```bash
+# root .env of the Core checkout
+LOGINFRA_ENABLED=true
+```
+
+Then run `./install_indramesh_k8s.sh`. It installs Loki and Alloy and writes the backend's
+`LOKI_QUERY_URL` itself.
+
+**Your own Loki** instead of the bundled one — keep the collector and point the query base at it:
+
+```bash
+# root .env of the Core checkout
+COMPOSE_PROFILES=logging
+LOKI_QUERY_URL=https://loki.example.com
+LOG_EXPLORER_EXTERNAL_ONLY=true
+```
+
+**Optional "open in Grafana" link** — set `GRAFANA_EXPLORE_URL` and `GRAFANA_LOKI_DATASOURCE`.
+
+Every value takes effect when the backend is (re)created. Each switch costs memory: the log stack
+adds Loki and Alloy to the running services. IndraMesh Core's `docs/LOGGING-INFRASTRUCTURE.md`
+describes every variable and the external targets (OTLP, Graylog) in full.
+
 ## Purpose
 
 Operators and developers search and follow application logs from the bundled Loki (or the
